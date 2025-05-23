@@ -326,7 +326,7 @@ import TabItem from '@theme/TabItem'
 
   <TabItem value="deno" label="Deno">
     \`\`\`bash
-      $ deno add --global docusaurus
+      $ deno install --global docusaurus --npm
     \`\`\`
   </TabItem>
 </Tabs>
