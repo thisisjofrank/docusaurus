@@ -11,7 +11,7 @@ import type {MdxJsxFlowElement, MdxJsxAttribute} from 'mdast-util-mdx';
 import type {Node, Parent} from 'unist';
 import type {Transformer, Plugin} from 'unified';
 
-type KnownConverter = 'yarn' | 'pnpm' | 'bun';
+type KnownConverter = 'yarn' | 'pnpm' | 'bun' | 'deno';
 
 type CustomConverter = [name: string, cb: (npmCode: string) => string];
 
@@ -77,6 +77,15 @@ const transformNode = (
 
   function createConvertedTabItem(converter: Converter) {
     if (typeof converter === 'string') {
+      // Special handling for Deno when command contains 'install'
+      if (converter === 'deno' && npmCode.includes('install')) {
+        return createTabItem({
+          code: `${npmToYarn(npmCode, converter)} --npm`,
+          node,
+          value: converter,
+          label: getLabelForConverter(converter),
+        });
+      }
       return createTabItem({
         code: npmToYarn(npmCode, converter),
         node,
@@ -98,6 +107,8 @@ const transformNode = (
         return 'Yarn';
       case 'bun':
         return 'Bun';
+      case 'deno':
+        return 'Deno';
       default:
         return converter;
     }
@@ -172,7 +183,7 @@ function createImportNode() {
 }
 
 const plugin: Plugin<[PluginOptions?]> = (options = {}): Transformer => {
-  const {sync = false, converters = ['yarn', 'pnpm', 'bun']} = options;
+  const {sync = false, converters = ['yarn', 'pnpm', 'bun', 'deno']} = options;
   return async (root) => {
     const {visit} = await import('unist-util-visit');
 

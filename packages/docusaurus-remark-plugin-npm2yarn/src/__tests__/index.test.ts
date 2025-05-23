@@ -114,6 +114,12 @@ describe('npm2yarn plugin', () => {
 
     expect(result).toMatchSnapshot();
   });
+  
+  it('work with deno converter', async () => {
+    const result = await processFixture('plugin', {converters: ['deno']});
+
+    expect(result).toMatchSnapshot();
+  });
 
   it('work with custom converter', async () => {
     const result = await processFixture('plugin', {
